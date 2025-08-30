@@ -1,5 +1,5 @@
 function loadData(){
-    return fetch('/api/data').then(response => {
+    return fetch('/data').then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -13,7 +13,6 @@ function loadData(){
     });
 }
 function loadInterface(data){
-    console.log(data)
     var homePageHTML=""
     homePageHTML=`<h1>Lista de compras</h1><div><input type="text"><button>Add</button></div>`
     homePageHTML+="<ol>"
@@ -267,7 +266,7 @@ function eventsHome(){
                 active:e.getAttribute('class')==='active'?1:0,
                 super:e.firstChild.getAttribute('cl-supermercado')
             }
-            const apiResponse = await fetch('/api/toggleActive', {
+            const apiResponse = await fetch('/toggleActive', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -281,7 +280,7 @@ function eventsHome(){
         document.querySelector('body').innerHTML+=`<div class="question"><div><div>Excluir???</div><button>Sim</button><button>Não</button></div></div>`
         document.querySelector('body > div:last-child > div > button:nth-child(2)').addEventListener('mouseup', async function(){
             const data={item:e.firstChild.getAttribute('cl-supermercado')}
-            await fetch('/api/delete', {
+            await fetch('/delete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -333,7 +332,7 @@ async function add() {
         const data = {
             new:input.value,
         }
-        const apiResponse = await fetch('/api/new', {
+        const apiResponse = await fetch('/new', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

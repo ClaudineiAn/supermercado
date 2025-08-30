@@ -1,7 +1,7 @@
 import Database from '../models/database.js';
 
 export class generalController {
-    static async load() {
+    static async load(data) {
         try {
             const data = await Database.getAllItens();
             return {
@@ -12,8 +12,7 @@ export class generalController {
         } catch (error) {
             return {
                 view: 'home error',
-                message: error,
-                data: JSON.stringify(await Database.getAllItens())
+                message: error
             };
         }
     }

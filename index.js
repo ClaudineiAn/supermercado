@@ -1,7 +1,5 @@
-// netlify/functions/server.js
 import bodyParser from 'body-parser';
 import express from 'express';
-import serverless from 'serverless-http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -13,46 +11,51 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Import your controller
-import { generalController } from '../controllers/generalControllers.js';
+const hostname = '127.0.0.1';
+const port = 3000;
 
-// Serve static files from 'visions' directory with proper MIME types
-app.use('/static', express.static(path.join(__dirname, '../visions'), {
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
-    } else if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
-    }
-  }
-}));
+import {generalController} from './controllers/generalControllers.js';
 
-// API routes
-app.get('/api/data', async (req, res) => {
-  res.json(await generalController.load());
+app.use(express.static(path.join(__dirname, '')));
+
+app.get('/', (req, res) => {
+    const filePath = path.join(__dirname, './visions/index.html');
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            console.error('Error sending file:', err);
+            res.status(404).send('File not found.');
+        }
+    });
 });
 
-app.post('/api/toggleActive', (req, res) => {
-  const data = req.body;
-  generalController.toggle(data);
-  res.json({ message: 'Action received successfully!' });
+app.get('/data',async (req, res) => {
+    res.json(await generalController.load());
 });
 
-app.post('/api/new', (req, res) => {
-  const data = req.body;
-  generalController.new(data);
-  res.json({ message: 'New successfully Added!' });
+app.post('/toggleActive', (req, res) => {
+    const data = req.body;
+    generalController.toggle(data);
+    res.json({
+        message: 'Action received successfully!'
+    });
 });
 
-app.post('/api/delete', (req, res) => {
-  const data = req.body;
-  generalController.deleteItem(data);
-  res.json({ message: 'Deleted successfully!' });
+app.post('/new', (req, res) => {
+    const data = req.body;
+    generalController.new(data);
+    res.json({
+        message: 'New successfully Added!'
+    });
 });
 
-// For all other routes, serve the main HTML
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../visions/index.html'));
+app.post('/delete', (req, res) => {
+    const data = req.body;
+    generalController.deleteItem(data);
+    res.json({
+        message: 'Deleted successfully!'
+    });
 });
 
-export const handler = serverless(app);
+app.listen(port, () => {
+  console.log(`Server listening at http://localhost:${port}`);
+});

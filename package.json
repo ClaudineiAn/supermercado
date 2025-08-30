@@ -1,18 +1,14 @@
 {
   "name": "supermercado",
-  "type": "module",
   "lockfileVersion": 3,
   "requires": true,
   "main": "index.js",
   "packages": {},
   "scripts": {
-    "build": "mkdir -p public && cp -r visions/* public/",
-    "dev": "echo 'Development server'"
+    "start": "node index.js"
   },
   "dependencies": {
-    "@vendia/serverless-express": "^4.12.6",
     "express": "^5.1.0",
-    "mysql2": "^3.14.3",
-    "serverless-http": "^3.2.0"
+    "mysql2": "^3.14.3"
   }
 }

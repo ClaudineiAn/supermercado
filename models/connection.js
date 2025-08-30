@@ -11,7 +11,7 @@ class Connection {
                 user: process.env.DB_USER || 'superxmen',
                 password: process.env.DB_PASSWORD || 'minhagata',
                 database: process.env.DB_NAME || 'lojaonline13',
-                port: 3306,
+                port: process.env.DB_PORT || 3306,
                 waitForConnections: true,
                 connectionLimit: 10,
                 queueLimit: 0
