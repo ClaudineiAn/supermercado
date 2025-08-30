@@ -2,26 +2,15 @@
   "version": 2,
   "builds": [
     {
-      "src": "netlify/functions/server.js",
-      "use": "@vercel/node"
-    },
-    {
       "src": "visions/**/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/netlify/functions/server"
-    },
-    {
-      "src": "/static/(.*)",
-      "dest": "/visions/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/visions/index.html"
+      "dest": "/visions/$1"
     }
-  ]
+  ],
+  "outputDirectory": "visions"
 }
