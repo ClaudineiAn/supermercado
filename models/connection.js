@@ -7,11 +7,11 @@ class Connection {
     static async initializePool() {
         if (!Connection.#pool) {
             Connection.#pool = mysql.createPool({
-                host: process.env.DB_HOST || 'db4free.net',
-                user: process.env.DB_USER || 'superxmen',
-                password: process.env.DB_PASSWORD || 'minhagata',
-                database: process.env.DB_NAME || 'lojaonline13',
-                port: process.env.DB_PORT || 3306,
+                host: 'db4free.net',
+                user: 'superxmen',
+                password: 'minhagata',
+                database: 'lojaonline13',
+                port: 3306,
                 waitForConnections: true,
                 connectionLimit: 10,
                 queueLimit: 0
