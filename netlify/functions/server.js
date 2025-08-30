@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Import your controller
-import { generalController } from '../controllers/generalControllers.js';
+import { generalController } from '../../controllers/generalControllers.js';
 
 // Serve static files from 'visions' directory with proper MIME types
 app.use('/static', express.static(path.join(__dirname, '../visions'), {
