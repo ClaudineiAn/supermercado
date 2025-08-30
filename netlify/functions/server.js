@@ -1,58 +1,165 @@
 // netlify/functions/server.js
-import bodyParser from 'body-parser';
-import express from 'express';
-import serverless from 'serverless-http';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const app = express();
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Import your controller
 import { generalController } from '../../controllers/generalControllers.js';
+import { readFile } from 'fs/promises';
+import path from 'path';
 
-// Serve static files from 'visions' directory with proper MIME types
-app.use('/static', express.static(path.join(__dirname, '../../visions'), {
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
-    } else if (path.endsWith('.css')) {
-      res.setHeader('Content-Type', 'text/css');
+const projectRoot = process.cwd();
+const visionsPath = path.join(projectRoot, 'visions');
+
+export async function handler(event, context) {
+  console.log('Request received:', event.path, event.httpMethod);
+
+  try {
+    // Handle API routes
+    if (event.path.startsWith('/api/')) {
+      return await handleApiRequest(event);
     }
+
+    // Handle static file requests
+    if (event.path.startsWith('/static/')) {
+      return await handleStaticFile(event);
+    }
+
+    // Serve the main HTML for all other routes (SPA behavior)
+    return await serveIndexHtml();
+    
+  } catch (error) {
+    console.error('Error handling request:', error);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Internal server error', details: error.message })
+    };
   }
-}));
+}
 
-// API routes
-app.get('/api/data', async (req, res) => {
-  res.json(await generalController.load());
-});
+async function handleApiRequest(event) {
+  const { path, httpMethod, body } = event;
+  
+  switch (path) {
+    case '/api/data':
+      if (httpMethod === 'GET') {
+        const data = await generalController.load();
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        };
+      }
+      break;
 
-app.post('/api/toggleActive', (req, res) => {
-  const data = req.body;
-  generalController.toggle(data);
-  res.json({ message: 'Action received successfully!' });
-});
+    case '/api/toggleActive':
+      if (httpMethod === 'POST') {
+        const requestBody = parseBody(body);
+        generalController.toggle(requestBody);
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'Action received successfully!' })
+        };
+      }
+      break;
 
-app.post('/api/new', (req, res) => {
-  const data = req.body;
-  generalController.new(data);
-  res.json({ message: 'New successfully Added!' });
-});
+    case '/api/new':
+      if (httpMethod === 'POST') {
+        const requestBody = parseBody(body);
+        generalController.new(requestBody);
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'New successfully Added!' })
+        };
+      }
+      break;
 
-app.post('/api/delete', (req, res) => {
-  const data = req.body;
-  generalController.deleteItem(data);
-  res.json({ message: 'Deleted successfully!' });
-});
+    case '/api/delete':
+      if (httpMethod === 'POST') {
+        const requestBody = parseBody(body);
+        generalController.deleteItem(requestBody);
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'Deleted successfully!' })
+        };
+      }
+      break;
 
-// For all other routes, serve the main HTML
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../visions/index.html'));
-});
+    default:
+      return {
+        statusCode: 404,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'API endpoint not found' })
+      };
+  }
 
-export const handler = serverless(app);
+  return {
+    statusCode: 405,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ error: 'Method not allowed' })
+  };
+}
+
+async function handleStaticFile(event) {
+  const filePath = event.path.replace('/static/', '');
+  const fullPath = path.join(visionsPath, filePath);
+  
+  try {
+    const content = await readFile(fullPath, 'utf8');
+    const contentType = getContentType(filePath);
+    
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': contentType },
+      body: content
+    };
+  } catch (error) {
+    return {
+      statusCode: 404,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'File not found' })
+    };
+  }
+}
+
+async function serveIndexHtml() {
+  try {
+    const html = await readFile(path.join(visionsPath, 'index.html'), 'utf8');
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'text/html' },
+      body: html
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Failed to load index.html' })
+    };
+  }
+}
+
+function parseBody(body) {
+  if (!body) return {};
+  try {
+    return JSON.parse(body);
+  } catch {
+    return {};
+  }
+}
+
+function getContentType(filename) {
+  const extension = path.extname(filename).toLowerCase();
+  const contentTypes = {
+    '.html': 'text/html',
+    '.css': 'text/css',
+    '.js': 'application/javascript',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+    '.ico': 'image/x-icon'
+  };
+  return contentTypes[extension] || 'text/plain';
+}

@@ -11,6 +11,7 @@
     "netlify-dev": "netlify dev"
   },
   "dependencies": {
+    "@vendia/serverless-express": "^4.12.6",
     "express": "^5.1.0",
     "mysql2": "^3.14.3",
     "serverless-http": "^3.2.0"
