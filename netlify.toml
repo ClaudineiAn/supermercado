@@ -3,17 +3,17 @@
   publish = "visions"
   functions = "netlify/functions"
 
-[dev]
-  command = "npm run dev"
-  targetPort = 3000
-  publish = "visions"
+[[redirects]]
+  from = "/static/*"
+  to = "/.netlify/functions/server/static/:splat"
+  status = 200
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/server/:splat"
+  to = "/.netlify/functions/server/api/:splat"
   status = 200
 
-# For SPA routing - redirect all routes to index.html
+# For SPA routing - redirect all other routes to index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
