@@ -6,9 +6,8 @@
   "main": "index.js",
   "packages": {},
   "scripts": {
-    "build": "echo 'Build complete'",
-    "dev": "node server.js",
-    "netlify-dev": "netlify dev"
+    "build": "mkdir -p public && cp -r visions/* public/",
+    "dev": "echo 'Development server'"
   },
   "dependencies": {
     "@vendia/serverless-express": "^4.12.6",
