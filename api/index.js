@@ -2,24 +2,24 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { generalController } from './controllers/generalControllers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Get the root directory (go up one level from /api)
+const rootDir = path.join(__dirname, '..');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const hostname = '127.0.0.1';
-const port = 3000;
-
-import {generalController} from './controllers/generalControllers.js';
-
-app.use(express.static(path.join(__dirname, '')));
+// Serve static files from the root directory
+app.use(express.static(rootDir));
 
 app.get('/', (req, res) => {
-    const filePath = path.join(__dirname, './visions/index.html');
+    const filePath = path.join(rootDir, 'visions', 'index.html');
     res.sendFile(filePath, (err) => {
         if (err) {
             console.error('Error sending file:', err);
@@ -28,11 +28,12 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/data',async (req, res) => {
+// ... rest of your API routes remain the same
+app.get('/data', async (req, res) => {
     res.json(await generalController.load());
 });
 
-app.post('/toggleActive', (req, res) => {
+app.post('/api/toggleActive', (req, res) => {
     const data = req.body;
     generalController.toggle(data);
     res.json({
@@ -59,3 +60,5 @@ app.post('/delete', (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+export default app;
