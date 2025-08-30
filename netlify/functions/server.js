@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 import { generalController } from '../../controllers/generalControllers.js';
 
 // Serve static files from 'visions' directory with proper MIME types
-app.use('/static', express.static(path.join(__dirname, '../visions'), {
+app.use('/static', express.static(path.join(__dirname, '../../visions'), {
   setHeaders: (res, path) => {
     if (path.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript');
