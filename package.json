@@ -1,0 +1,14 @@
+{
+  "name": "supermercado",
+  "lockfileVersion": 3,
+  "requires": true,
+  "main": "index.js",
+  "packages": {},
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mysql2": "^3.14.3"
+  }
+}
