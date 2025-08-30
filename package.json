@@ -1,12 +1,14 @@
 {
   "name": "supermercado",
+  "type": "module",
   "lockfileVersion": 3,
   "requires": true,
   "main": "index.js",
   "packages": {},
   "scripts": {
-    "build": "node build.js --output-dir=dist",
-    "dev": "node server.js"
+    "build": "echo 'Build complete'",
+    "dev": "node server.js",
+    "netlify-dev": "netlify dev"
   },
   "dependencies": {
     "express": "^5.1.0",

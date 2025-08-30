@@ -1,3 +1,4 @@
+// netlify/functions/server.js
 import bodyParser from 'body-parser';
 import express from 'express';
 import serverless from 'serverless-http';
@@ -12,15 +13,14 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const hostname = '127.0.0.1';
-const port = 3000;
+// Import your controller
+import { generalController } from './controllers/generalControllers.js';
 
-import {generalController} from './controllers/generalControllers.js';
-
-app.use(express.static(path.join(__dirname, '')));
+// Serve static files from 'visions' directory
+app.use(express.static(path.join(__dirname, '../visions')));
 
 app.get('/', (req, res) => {
-    const filePath = path.join(__dirname, './visions/index.html');
+    const filePath = path.join(__dirname, '../visions/index.html');
     res.sendFile(filePath, (err) => {
         if (err) {
             console.error('Error sending file:', err);
@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/data',async (req, res) => {
+app.get('/data', async (req, res) => {
     res.json(await generalController.load());
 });
 
@@ -57,7 +57,5 @@ app.post('/delete', (req, res) => {
     });
 });
 
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
-});
-module.exports.handler = serverless(app);
+// Export as serverless function
+export const handler = serverless(app);
