@@ -12,7 +12,8 @@ export class generalController {
         } catch (error) {
             return {
                 view: 'home error',
-                message: error
+                message: error,
+                data: JSON.stringify(await Database.getAllItens())
             };
         }
     }
