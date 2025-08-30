@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser';
 import express from 'express';
+import serverless from 'serverless-http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -59,3 +60,4 @@ app.post('/delete', (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+module.exports.handler = serverless(app);
