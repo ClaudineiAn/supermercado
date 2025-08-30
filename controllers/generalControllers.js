@@ -1,20 +1,13 @@
 import Database from '../models/database.js';
 
 export class generalController {
-    static async load(data) {
-        try {
+    static async load() {
             const data = await Database.getAllItens();
             return {
                 view: 'home',
                 data: data,
                 message: "Loading Data."
             };
-        } catch (error) {
-            return {
-                view: 'home error',
-                message: error
-            };
-        }
     }
     static async toggle(data) {
         try {
