@@ -5,8 +5,8 @@
   "main": "index.js",
   "packages": {},
   "scripts": {
-    "build": "echo 'Netlify build successful' && exit 0",
-    "start": "node server.js"
+    "build": "node build.js --output-dir=dist",
+    "dev": "node server.js"
   },
   "dependencies": {
     "express": "^5.1.0",
