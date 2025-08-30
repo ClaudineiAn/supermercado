@@ -13,6 +13,7 @@ function loadData(){
     });
 }
 function loadInterface(data){
+    console.log(data)
     var homePageHTML=""
     homePageHTML=`<h1>Lista de compras</h1><div><input type="text"><button>Add</button></div>`
     homePageHTML+="<ol>"
